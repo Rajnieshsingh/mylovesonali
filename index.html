@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Beautiful Sonali</title>
+    <style>
+        :root {
+            --primary-pink: #ff4d6d;
+            --dark-pink: #c9184a;
+            --light-pink: #fff0f3;
+            --soft-purple: #4a0e17;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a0005 0%, #4a0e17 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Floating Hearts Canvas */
+        #hearts-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Intro Section */
+        .intro-screen {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px 20px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            animation: fadeIn 1.5s ease;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #ff4d6d;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(255, 77, 109, 0.6);
+        }
+
+        .photo-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px auto;
+            border-radius: 50%;
+            border: 4px solid #ff4d6d;
+            overflow: hidden;
+            box-shadow: 0 0 25px rgba(255, 77, 109, 0.8);
+            position: relative;
+        }
+
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .photo-container:hover img {
+            transform: scale(1.1);
+        }
+
+        p.subtitle {
+            font-size: 1.2rem;
+            color: #ffb3c1;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff4d6d, #ff758f);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 77, 109, 0.6);
+        }
+
+        /* Cue Cards Section */
+        .card-section {
+            display: none;
+            perspective: 1000px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border: 2px solid #ff4d6d;
+            padding: 40px 30px;
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-text {
+            font-size: 1.4rem;
+            line-height: 1.8;
+            color: #fff0f3;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .card-navigation {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Final Proposal Section */
+        .proposal-section {
+            display: none;
+            background: rgba(201, 24, 74, 0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid #ff4d6d;
+            padding: 40px 20px;
+            border-radius: 25px;
+            box-shadow: 0 0 40px rgba(255, 77, 109, 0.3);
+        }
+
+        .proposal-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-top: 30px;
+            height: 80px;
+            position: relative;
+        }
+
+        #no-btn {
+            position: absolute;
+            transition: all 0.2s ease;
+        }
+
+        /* Success Screen */
+        .success-screen {
+            display: none;
+            animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .success-screen h1 {
+            font-size: 3.5rem;
+            color: #ff4d6d;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); text-shadow: 0 0 15px rgba(255, 77, 109, 0.6); }
+            50% { transform: scale(1.05); text-shadow: 0 0 30px rgba(255, 77, 109, 0.9); }
+            100% { transform: scale(1); text-shadow: 0 0 15px rgba(255, 77, 109, 0.6); }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="hearts-canvas"></canvas>
+
+    <div class="container">
+        <div id="intro" class="intro-screen">
+            <div class="photo-container">
+                <img src="sonali.jpeg">
+            </div>
+            <h1>Hey Sonali...</h1>
+            <p class="subtitle">You look absolutely breathtaking every single day. I made something special just for you. Want to see it?</p>
+            <button class="btn" onclick="startExperience()">Yes, show me! ❤️</button>
+        </div>
+
+        <div id="cards" class="card-section">
+            <div class="card">
+                <div id="card-content" class="card-text">
+                    </div>
+                <div class="card-navigation">
+                    <button class="btn-secondary" id="prev-btn" onclick="prevCard()">Back</button>
+                    <button class="btn" id="next-btn" onclick="nextCard()">Next Thoughts ✨</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="proposal" class="proposal-section">
+            <h1>Sonali...</h1>
+            <p class="subtitle" style="font-size: 1.5rem;">You steal my heart every time you smile. You are my today, and all of my tomorrows.</p>
+            <h2 style="color: #ff758f; margin-bottom: 20px;">Will you stay mine forever? 🌹</h2>
+            <div class="proposal-buttons">
+                <button class="btn" id="yes-btn" onclick="acceptProposal()">YES! 💖</button>
+                <button class="btn" id="no-btn" onmouseover="escapeButton()">No</button>
+            </div>
+        </div>
+
+        <div id="success" class="success-screen">
+            <h1>I Knew It! 🥰</h1>
+            <p class="subtitle" style="font-size: 1.4rem; margin-top: 20px;">
+                You are stuck with me now, Sonali! I love you to the moon and back. 💖🥂
+            </p>
+            <div class="photo-container" style="width: 150px; height: 150px; margin-top: 20px;">
+                <img src="WhatsApp Image 2026-06-25 at 1.08.40 PM.jpeg">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Romantic Cue Cards Content ---
+        const messages = [
+            "From the moment you walked into my life, everything became brighter and more beautiful.",
+            "Your laughter is literally my absolute favorite soundtrack in the entire world. 🎶",
+            "Just one glance at your picture, and all my stress instantly melts away.",
+            "I love your quirks, your smile, and the way you completely hold my heart without even trying.",
+            "Every single love song suddenly makes perfect sense since I met you, Sonali. 💋",
+            "I have one vital question left to ask you..."
+        ];
+
+        let currentCardIndex = 0;
+
+        // --- Transitions ---
+        function startExperience() {
+            document.getElementById('intro').style.display = 'none';
+            document.getElementById('cards').style.display = 'block';
+            updateCard();
+        }
+
+        function updateCard() {
+            const content = document.getElementById('card-content');
+            content.style.opacity = 0;
+            
+            setTimeout(() => {
+                content.innerHTML = messages[currentCardIndex];
+                content.style.opacity = 1;
+                
+                // Hide back button on first card
+                document.getElementById('prev-btn').style.visibility = 
+                    currentCardIndex === 0 ? 'hidden' : 'visible';
+                
+                // Change button text on final card
+                if (currentCardIndex === messages.length - 1) {
+                    document.getElementById('next-btn').innerText = "Ask Me! 💘";
+                } else {
+                    document.getElementById('next-btn').innerText = "Next Thoughts ✨";
+                }
+            }, 200);
+        }
+
+        function nextCard() {
+            if (currentCardIndex < messages.length - 1) {
+                currentCardIndex++;
+                updateCard();
+            } else {
+                document.getElementById('cards').style.display = 'none';
+                document.getElementById('proposal').style.display = 'block';
+            }
+        }
+
+        function prevCard() {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                updateCard();
+            }
+        }
+
+        // --- The Running "No" Button Interaction ---
+        function escapeButton() {
+            const noBtn = document.getElementById('no-btn');
+            // Generate chaotic, random coordinates within the proposal button container boundaries
+            const x = Math.floor(Math.random() * 200) - 100;
+            const y = Math.floor(Math.random() * 80) - 40;
+            
+            noBtn.style.transform = `translate(${x}px, ${y}px)`;
+        }
+
+        function acceptProposal() {
+            document.getElementById('proposal').style.display = 'none';
+            document.getElementById('success').style.display = 'block';
+            // Increase background heart generation drastically
+            burstHearts();
+        }
+
+        // --- Interactive Floating Background Hearts ---
+        const canvas = document.getElementById('hearts-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let hearts = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Heart {
+            constructor(x, y, size, speedX, speedY) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.speedX = speedX;
+                this.speedY = speedY;
+                this.opacity = Math.random() * 0.5 + 0.3;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = '#ff4d6d';
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y + this.size / 4);
+                ctx.quadraticCurveTo(this.x, this.y, this.x + this.size / 2, this.y);
+                ctx.quadraticCurveTo(this.x + this.size, this.y, this.x + this.size, this.y + this.size / 4);
+                ctx.quadraticCurveTo(this.x + this.size, this.y + this.size / 2, this.x + this.size / 2, this.y + this.size * 0.75);
+                ctx.quadraticCurveTo(this.x, this.y + this.size / 2, this.x, this.y + this.size / 4);
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.y < -this.size) {
+                    this.y = canvas.height + this.size;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+        }
+
+        function initHearts() {
+            hearts = [];
+            for (let i = 0; i < 40; i++) {
+                let size = Math.random() * 15 + 10;
+                let x = Math.random() * canvas.width;
+                let y = Math.random() * canvas.height;
+                let speedX = Math.random() * 1 - 0.5;
+                let speedY = -(Math.random() * 1 + 0.5);
+                hearts.push(new Heart(x, y, size, speedX, speedY));
+            }
+        }
+
+        function burstHearts() {
+            for (let i = 0; i < 80; i++) {
+                let size = Math.random() * 25 + 10;
+                let x = Math.random() * canvas.width;
+                let y = canvas.height + Math.random() * 100;
+                let speedX = Math.random() * 4 - 2;
+                let speedY = -(Math.random() * 5 + 3);
+                hearts.push(new Heart(x, y, size, speedX, speedY));
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hearts.forEach(heart => {
+                heart.update();
+                heart.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        initHearts();
+        animate();
+    </script>
+</body>
+</html>
